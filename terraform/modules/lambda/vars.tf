@@ -8,6 +8,11 @@ variable "code" {
   type        = string
 }
 
+variable "api_gateway_execution_arn" {
+  description = "The execution ARN for the API gateway that should call this lambda"
+  type        = string
+}
+
 locals {
   prefix = "evertras-home-dashboard-${var.name}"
 }
