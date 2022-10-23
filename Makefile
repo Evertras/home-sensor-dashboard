@@ -25,11 +25,11 @@ clean:
 	rm -rf bin
 
 # Local Python virtual environment
-.venv:
+.venv: requirements.txt
+	@# Start fresh to avoid contaminating packages remaining from old requirements.txt
+	@rm -rf .venv
 	python3 -m venv .venv
-
-.venv/bin/localstack: .venv
-	./.venv/bin/python3 -m pip install localstack
+	.venv/bin/pip3 install -r requirements.txt
 
 # For now we only support Linux 64 bit and MacOS for simplicity
 ifeq ($(shell uname), Darwin)
