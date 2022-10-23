@@ -30,7 +30,15 @@ baked into the [Makefile](./Makefile) by running `make local-tf-apply`.
 The `awslocal` utility is also installed via Makefile.
 
 Check [.envrc.example](./.envrc.example) to see how to configure all this for
-easier use.
+easier use. Some quick reference examples are given below.
+
+```bash
+# Check DynamoDB tables
+awslocal dynamodb list-tables
+
+# Invoke a lambda (replace 'idk')
+awslocal lambda invoke --function-name=evertras-home-dashboard-idk response.json
+```
 
 ## Design
 
