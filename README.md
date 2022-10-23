@@ -12,3 +12,8 @@ to the local path for easier use.
 This is intended as a sandbox/reference for building a site using AWS Lambdas,
 API Gateway, and being able to test everything locally with localstack,
 including the Terraform deployment.
+
+## References
+
+- [https://docs.localstack.cloud/integrations/terraform/](Localstack +
+  Terraform)
