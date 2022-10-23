@@ -1,2 +1,5 @@
 # Local tooling
 PATH_add bin
+
+# Local Python virtual environment
+PATH_add .venv/bin

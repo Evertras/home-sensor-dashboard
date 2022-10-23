@@ -2,19 +2,25 @@
 .PHONY: default
 default: \
 	bin/terraform \
-	node_modules
+	node_modules \
+	.venv
 
+.PHONY: lint
 lint: node_modules
 	@echo "===> Checking Terraform..."
 	./bin/terraform fmt -check -recursive ./terraform
 	@echo "===> Checking other files..."
 	npx prettier --check .
 
+.PHONY: lint-fix
 lint-fix: node_modules
 	@echo "===> Fixing Terraform..."
 	./bin/terraform fmt -recursive ./terraform
 	@echo "===> Fixing other files..."
 	npx prettier --write .
+
+.venv:
+	python3 -m venv .venv
 
 # For now we only support Linux 64 bit and MacOS for simplicity
 ifeq ($(shell uname), Darwin)
