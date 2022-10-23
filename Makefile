@@ -6,21 +6,30 @@ default: \
 	.venv
 
 .PHONY: lint
-lint: node_modules
+lint: node_modules bin/terraform
 	@echo "===> Checking Terraform..."
 	./bin/terraform fmt -check -recursive ./terraform
 	@echo "===> Checking other files..."
 	npx prettier --check .
 
 .PHONY: lint-fix
-lint-fix: node_modules
+lint-fix: node_modules bin/terraform
 	@echo "===> Fixing Terraform..."
 	./bin/terraform fmt -recursive ./terraform
 	@echo "===> Fixing other files..."
 	npx prettier --write .
 
+.PHONY: clean
+clean:
+	rm -rf .venv
+	rm -rf bin
+
+# Local Python virtual environment
 .venv:
 	python3 -m venv .venv
+
+.venv/bin/localstack: .venv
+	./.venv/bin/python3 -m pip install localstack
 
 # For now we only support Linux 64 bit and MacOS for simplicity
 ifeq ($(shell uname), Darwin)
