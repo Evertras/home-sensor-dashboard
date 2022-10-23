@@ -16,7 +16,7 @@ resource "aws_lambda_function" "lambda" {
 
   source_code_hash = filebase64sha256(data.archive_file.lambda_code.output_path)
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs16.x"
   handler = "index.handler"
 
   role = aws_iam_role.lambda_exec.arn
