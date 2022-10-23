@@ -102,3 +102,12 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Terraform local files
+.terraform
+
+# Local tooling
+/bin
+
+# Local env files
+.envrc

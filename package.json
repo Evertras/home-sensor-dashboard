@@ -1,0 +1,12 @@
+{
+  "name": "site-tools",
+  "description": "Local dev tools shared across the repo as a whole",
+  "devDependencies": {
+    "husky": "^8.0.1",
+    "prettier": "^2.7.1",
+    "prettier-plugin-go-template": "^0.0.13"
+  },
+  "scripts": {
+    "prepare": "husky install"
+  }
+}
