@@ -114,3 +114,6 @@ dist
 
 # Local python environment
 .venv
+
+# Lambdas are zipped before sending
+*.zip

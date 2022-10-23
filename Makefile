@@ -23,6 +23,7 @@ lint-fix: node_modules bin/terraform
 clean:
 	rm -rf .venv
 	rm -rf bin
+	rm -rf terraform/modules/lambda/.archives
 
 .PHONY: local-tf-apply
 local-tf-apply: .venv bin/terraform
