@@ -1,6 +1,6 @@
 # Home sensor dashboard
 
-A dashboard for home sensor data.  This is more of a playground for doing AWS
+A dashboard for home sensor data. This is more of a playground for doing AWS
 serverless development than a real useful project.
 
 ## Goals
