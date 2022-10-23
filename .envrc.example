@@ -3,3 +3,6 @@ PATH_add bin
 
 # Local Python virtual environment
 PATH_add .venv/bin
+
+# For awslocal
+export DEFAULT_REGION=ap-northeast-1
