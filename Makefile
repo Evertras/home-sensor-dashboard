@@ -24,6 +24,14 @@ clean:
 	rm -rf .venv
 	rm -rf bin
 
+.PHONY: local-tf-apply
+local-tf-apply: .venv bin/terraform
+	cd terraform && ../.venv/bin/tflocal apply -auto-approve
+
+.PHONY: local-tf-destroy
+local-tf-destroy: .venv bin/terraform
+	cd terraform && ../.venv/bin/tflocal apply -destroy -auto-approve
+
 # Local Python virtual environment
 .venv: requirements.txt
 	@# Start fresh to avoid contaminating packages remaining from old requirements.txt
