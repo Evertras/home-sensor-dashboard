@@ -7,3 +7,7 @@ variable "code" {
   description = "The raw code of the lambda."
   type        = string
 }
+
+locals {
+  prefix = "evertras-home-dashboard-${var.name}"
+}
