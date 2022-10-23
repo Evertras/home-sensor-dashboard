@@ -13,6 +13,25 @@ This is intended as a sandbox/reference for building a site using AWS Lambdas,
 API Gateway, and being able to test everything locally with localstack,
 including the Terraform deployment.
 
+There should be no global dependencies except Make and Python 3+, which are
+generally pre-installed on any machine this should be running on. Docker is
+required for local testing with [Localstack](https://github.com/localstack/localstack).
+
+## Deploying locally
+
+The rest of my infrastructure uses Terraform, so SAM is skipped in favor of
+doing some manual bits in Terraform.
+
+[Localstack](https://github.com/localstack/localstack) is used for local
+testing. [Terraform can be run against
+Localstack](https://docs.localstack.cloud/integrations/terraform/), and this is
+baked into the [Makefile](./Makefile) by running `make local-tf-apply`.
+
+The `awslocal` utility is also installed via Makefile.
+
+Check [.envrc.example](./.envrc.example) to see how to configure all this for
+easier use.
+
 ## Design
 
 The initial design is very simple. Data is stored in a DynamoDB table to keep
@@ -43,5 +62,5 @@ The schema uses the following format for latest measurements:
 
 ## References
 
-- [https://docs.localstack.cloud/integrations/terraform/](Localstack +
-  Terraform)
+- [Localstack + Terraform](https://docs.localstack.cloud/integrations/terraform/)
+- [Lambda + API Gateway with Terraform](https://learn.hashicorp.com/tutorials/terraform/lambda-api-gateway)
