@@ -66,7 +66,7 @@ The schema uses the following format for latest measurements:
 | MeasurementType  | S    | **Secondary Key.** The measurement type of the sensor, such as TemperatureC or Humidity100. Unit is always included in the name, such as C for Celsius and 100 for 0-100%. |
 | MeasurementValue | N    | The actual value of the measurement that was taken.                                                                                                                        |
 | Location         | S    | The physical location of the sensor.                                                                                                                                       |
-| Timestamp        | D    | The timestamp that this measurement was taken.                                                                                                                             |
+| Timestamp        | S    | The timestamp that this measurement was taken.                                                                                                                             |
 
 ## References
 
