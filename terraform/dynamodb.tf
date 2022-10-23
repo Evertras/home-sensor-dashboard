@@ -1,4 +1,4 @@
-resource "aws_dynamodb_table" "temp_table" {
+resource "aws_dynamodb_table" "sensor_data" {
   name     = "HomeSensorDashboardSensorData"
   hash_key = "SensorID"
 
