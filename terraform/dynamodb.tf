@@ -1,11 +1,12 @@
 resource "aws_dynamodb_table" "temp_table" {
-  name     = "TempDeleteMe"
-  hash_key = "ID"
+  name     = "HomeSensorDashboardSensorData"
+  hash_key = "SensorID"
 
   billing_mode = "PAY_PER_REQUEST"
 
+  /* Only define the key attribute here */
   attribute {
-    name = "ID"
+    name = "SensorID"
     type = "S"
   }
 }
