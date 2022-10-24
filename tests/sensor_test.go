@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -12,24 +11,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/cucumber/godog"
 )
-
-var (
-	envTableName string
-	envBaseURL   string
-)
-
-func init() {
-	mustEnv := func(key string) string {
-		val := os.Getenv(key)
-		if val == "" {
-			panic(fmt.Errorf("missing environment variable %q", key))
-		}
-		return val
-	}
-
-	envTableName = mustEnv("TEST_DYNAMODB_TABLE")
-	envBaseURL = mustEnv("TEST_BASE_URL")
-}
 
 func (t *testContext) hasNoPreviousData(name string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)

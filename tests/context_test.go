@@ -4,11 +4,31 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/cucumber/godog"
 )
+
+var (
+	envTableName string
+	envBaseURL   string
+)
+
+func init() {
+	mustEnv := func(key string) string {
+		val := os.Getenv(key)
+		if val == "" {
+			panic(fmt.Errorf("missing environment variable %q", key))
+		}
+		return val
+	}
+
+	envTableName = mustEnv("TEST_DYNAMODB_TABLE")
+	envBaseURL = mustEnv("TEST_BASE_URL")
+}
+
 
 type testContext struct {
 	db *dynamodb.Client
