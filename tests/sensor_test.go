@@ -13,14 +13,14 @@ import (
 	"github.com/cucumber/godog"
 )
 
-func (t *testContext) hasNoPreviousData(name string) error {
+func (t *testContext) hasNoPreviousData() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
 	_, err := t.db.DeleteItem(ctx, &dynamodb.DeleteItemInput{
 		Key: map[string]types.AttributeValue{
 			"SensorID": &types.AttributeValueMemberS{
-				Value: name,
+				Value: t.sensorName,
 			},
 		},
 		TableName: aws.String(envTableName),
@@ -33,22 +33,50 @@ func (t *testContext) hasNoPreviousData(name string) error {
 	return nil
 }
 
-func (t *testContext) sensorSendsMeasurement(sensor, kind string, measurement int) error {
-	url := fmt.Sprintf("%s/sensor/%s/%s", envBaseURL, sensor, kind)
+func (t *testContext) sendMeasurementInner(kind string, measurement int) (*http.Response, error) {
+	url := fmt.Sprintf("%s/sensor/%s/%s", envBaseURL, t.sensorName, kind)
 
-	body := bytes.NewBufferString(fmt.Sprintf("%d", measurement))
+	body := bytes.NewBufferString(fmt.Sprintf(`{"value": %d}`, measurement))
 
-	res, err := t.httpClient.Post(url, "text/plain", body)
+	req, err := http.NewRequest("PUT", url, body)
+
+	req.Header.Add("content-type", "application/json")
 
 	if err != nil {
-		return fmt.Errorf("t.httpClient.Post: %w", err)
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	res, err := t.httpClient.Do(req)
+
+	if err != nil {
+		return nil, fmt.Errorf("t.httpClient.Post: %w", err)
+	}
+
+	t.lastResponse = res
+
+	return res, nil
+}
+
+func (t *testContext) sensorSendsBadMeasurement(kind string, measurement int) error {
+	_, err := t.sendMeasurementInner(kind, measurement)
+
+	if err != nil {
+		return fmt.Errorf("t.sendMeasurementInner: %w", err)
+	}
+
+	return nil
+}
+
+func (t *testContext) sensorSendsMeasurement(kind string, measurement int) error {
+	res, err := t.sendMeasurementInner(kind, measurement)
+
+	if err != nil {
+		return fmt.Errorf("t.sendMeasurementInner: %w", err)
 	}
 
 	if res.StatusCode/100 != 2 {
 		return fmt.Errorf("expected status code 2xx, got %d", res.StatusCode)
 	}
-
-	t.lastResponse = res
 
 	return nil
 }

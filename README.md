@@ -36,13 +36,13 @@ how to deal with heavy time series data properly.
 
 The schema uses the following format for latest measurements:
 
-| Attribute        | Type | Details                                                                                                                                                                    |
-| ---------------- | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SensorID         | S    | **Partition Key.** The unique ID of the sensor.                                                                                                                            |
-| MeasurementType  | S    | **Secondary Key.** The measurement type of the sensor, such as TemperatureC or Humidity100. Unit is always included in the name, such as C for Celsius and 100 for 0-100%. |
-| MeasurementValue | N    | The actual value of the measurement that was taken.                                                                                                                        |
-| Location         | S    | The physical location of the sensor.                                                                                                                                       |
-| Timestamp        | S    | The timestamp that this measurement was taken.                                                                                                                             |
+| Attribute        | Type | Details                                                                                                                                                                                                                                                   |
+| ---------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SensorID         | S    | **Partition Key.** The unique ID of the sensor.                                                                                                                                                                                                           |
+| MeasurementKind  | S    | **Secondary Key.** The measurement type of the sensor, such as TemperatureC or Humidity100. Unit is always included in the name, such as C for Celsius and 100 for 0-100%. Always lowercased in storage and when comparing to achieve case insensitivity. |
+| MeasurementValue | N    | The actual value of the measurement that was taken.                                                                                                                                                                                                       |
+| Location         | S    | The physical location of the sensor.                                                                                                                                                                                                                      |
+| Timestamp        | S    | The timestamp that this measurement was taken.                                                                                                                                                                                                            |
 
 ## Terraform workspaces
 

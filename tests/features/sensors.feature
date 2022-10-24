@@ -3,13 +3,21 @@ Feature: sensor data
   As a consumer of sensor data
   I should be able to see updates sent from sensors immediately
 
+  Scenario: an unsupported measurement type is sent
+    Given a sensor named "test-bad"
+    And the sensor has no previous data
+    When the sensor sends a bad temperature measurement of 70
+    Then the status code should be 400
+
   Scenario: no sensor data exists
-    Given the sensor named "test-none" has no previous data
-    When I request the latest temperature measurement for "test-none"
+    Given a sensor named "test-none"
+    And the sensor has no previous data
+    When I request the latest TemperatureC measurement for "test-none"
     Then the measurement should not be found
 
   Scenario: the first sensor update is sent
-    Given the sensor named "test-first" has no previous data
-    When the sensor named "test-first" sends a temperature measurement of 28
-    And I request the latest temperature measurement for "test-first"
+    Given a sensor named "test-first"
+    And the sensor has no previous data
+    When the sensor sends a TemperatureC measurement of 28
+    And I request the latest TemperatureC measurement for "test-first"
     Then the measurement should equal 28

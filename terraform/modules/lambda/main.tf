@@ -19,6 +19,15 @@ resource "aws_lambda_function" "lambda" {
   runtime = "nodejs16.x"
   handler = "index.handler"
 
+  environment {
+    variables = merge(
+      {
+        "DEPLOY_ENVIRONMENT" = terraform.workspace == "default" ? "prod" : terraform.workspace,
+      },
+      var.environment_vars
+    )
+  }
+
   role = aws_iam_role.lambda_exec.arn
 }
 

@@ -18,6 +18,12 @@ variable "prefix" {
   type        = string
 }
 
+variable "environment_vars" {
+  description = "Environment variables to apply to the lambda"
+  type        = map(string)
+  default     = {}
+}
+
 locals {
   prefix = "${var.prefix}-${var.name}"
 }

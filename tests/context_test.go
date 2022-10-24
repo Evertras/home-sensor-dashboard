@@ -31,6 +31,8 @@ func init() {
 }
 
 type testContext struct {
+	sensorName string
+
 	db *dynamodb.Client
 
 	httpClient   *http.Client
@@ -39,13 +41,20 @@ type testContext struct {
 
 func newTestContext(db *dynamodb.Client) *testContext {
 	return &testContext{
-		db: db,
+		sensorName: "test-some-sensor",
+		db:         db,
 		httpClient: &http.Client{
 			Timeout: time.Second * 5,
 		},
 
 		lastResponse: nil,
 	}
+}
+
+func (t *testContext) aSensorNamed(name string) error {
+	t.sensorName = name
+
+	return nil
 }
 
 func (t *testContext) theStatusCodeShouldBe(code int) error {
@@ -80,9 +89,11 @@ func InitializeScenario(sc *godog.ScenarioContext) {
 
 	t = newTestContext(db)
 
-	sc.Step(`^the sensor named "([a-zA-Z0-9-]+)" has no previous data$`, t.hasNoPreviousData)
-	sc.Step(`^the sensor named "([a-zA-Z0-9-]+)" sends a (temperature) measurement of (\d+)$`, t.sensorSendsMeasurement)
-	sc.Step(`^I request the latest (temperature) measurement for "([a-zA-Z0-9-]+)"$`, t.requestLatestMeasurement)
+	sc.Step(`^a sensor named "([a-zA-Z0-9-]+)"$`, t.aSensorNamed)
+	sc.Step(`^the sensor has no previous data$`, t.hasNoPreviousData)
+	sc.Step(`^the sensor sends a (\w+) measurement of (\d+)$`, t.sensorSendsMeasurement)
+	sc.Step(`^the sensor sends a bad (\w+) measurement of (\d+)$`, t.sensorSendsBadMeasurement)
+	sc.Step(`^I request the latest (\w+) measurement for "([a-zA-Z0-9-]+)"$`, t.requestLatestMeasurement)
 	sc.Step(`^the measurement should equal (\d+)$`, t.measurementShouldBe)
 	sc.Step(`^the measurement should not be found$`, t.measurementShouldNotBeFound)
 	sc.Step(`^I call the dummy endpoint$`, t.iCallTheDummyEndpoint)
