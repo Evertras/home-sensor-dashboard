@@ -93,3 +93,8 @@ awslocal lambda invoke --function-name=evertras-home-dashboard-idk response.json
 
 - [Localstack + Terraform](https://docs.localstack.cloud/integrations/terraform/)
 - [Lambda + API Gateway with Terraform](https://learn.hashicorp.com/tutorials/terraform/lambda-api-gateway)
+
+## Random TODOs/gripes
+
+Lambdas in Terraform code are messy. Consolidate better. Probably just make
+the module more specialized to simplify, or use a lot more loops...

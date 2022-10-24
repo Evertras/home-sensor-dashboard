@@ -3,14 +3,15 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	"github.com/cucumber/godog"
 )
 
 func (t *testContext) hasNoPreviousData() error {
@@ -81,7 +82,7 @@ func (t *testContext) sensorSendsMeasurement(kind string, measurement int) error
 	return nil
 }
 
-func (t *testContext) requestLatestMeasurement(sensor string, kind string) error {
+func (t *testContext) requestLatestMeasurement(kind, sensor string) error {
 	url := fmt.Sprintf("%s/sensor/%s/%s", envBaseURL, sensor, kind)
 	res, err := t.httpClient.Get(url)
 
@@ -99,7 +100,27 @@ func (t *testContext) measurementShouldBe(value int) error {
 		return fmt.Errorf("no response tracked, probably test failure")
 	}
 
-	return godog.ErrPending
+	contents, err := io.ReadAll(t.lastResponse.Body)
+
+	if err != nil {
+		return fmt.Errorf("io.ReadAll: %w", err)
+	}
+
+	var response struct {
+		Value int `json:"value"`
+	}
+
+	err = json.Unmarshal(contents, &response)
+
+	if err != nil {
+		return fmt.Errorf("json.Unmarshal: %w", err)
+	}
+
+	if response.Value != value {
+		return fmt.Errorf("expected value %d but got %d", value, response.Value)
+	}
+
+	return nil
 }
 
 func (t *testContext) measurementShouldNotBeFound() error {

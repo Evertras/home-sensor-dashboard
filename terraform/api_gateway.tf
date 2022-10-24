@@ -27,6 +27,14 @@ resource "aws_apigatewayv2_integration" "send_data" {
   integration_method = "POST"
 }
 
+resource "aws_apigatewayv2_integration" "get_measurement" {
+  api_id = aws_apigatewayv2_api.api.id
+
+  integration_uri    = module.lambda_get_measurement.invoke_arn
+  integration_type   = "AWS_PROXY"
+  integration_method = "POST"
+}
+
 resource "aws_apigatewayv2_route" "dummy" {
   api_id = aws_apigatewayv2_api.api.id
 
@@ -39,4 +47,11 @@ resource "aws_apigatewayv2_route" "send_data" {
 
   route_key = "PUT /sensor/{sensorID}/{measurementKind}"
   target    = "integrations/${aws_apigatewayv2_integration.send_data.id}"
+}
+
+resource "aws_apigatewayv2_route" "get_measurement" {
+  api_id = aws_apigatewayv2_api.api.id
+
+  route_key = "GET /sensor/{sensorID}/{measurementKind}"
+  target    = "integrations/${aws_apigatewayv2_integration.get_measurement.id}"
 }
