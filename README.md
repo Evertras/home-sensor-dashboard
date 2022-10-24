@@ -57,6 +57,11 @@ better separate AWS credentials, etc., but for this simple setup it's fine.
 
 The `prod` environment is the default workspace. `dev` is the `dev` workspace.
 
+Credentials for a test user that has access to certain specific behavior is
+available in a generated `.envrc` file in `tests/` when `terraform apply` is run
+after selecting `terraform workspace select dev`. TODO: make this more sane to
+keep track of...
+
 ## Deploying locally (Deprecated)
 
 **NOTE:** Unfortunately, Localstack restricts API Gateway v2 to pro customers

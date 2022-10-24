@@ -3,29 +3,35 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/cucumber/godog"
 )
 
-type sensorApi struct {
-	db        *dynamodb.Client
-	tableName string
-}
+var (
+	envTableName string
+	envBaseURL   string
+)
 
-func newSensorApi(db *dynamodb.Client, tableName string) *sensorApi {
-	return &sensorApi{
-		db,
-		tableName,
+func init() {
+	mustEnv := func(key string) string {
+		val := os.Getenv(key)
+		if val == "" {
+			panic(fmt.Errorf("missing environment variable %q", key))
+		}
+		return val
 	}
+
+	envTableName = mustEnv("TEST_DYNAMODB_TABLE")
+	envBaseURL = mustEnv("TEST_BASE_URL")
 }
 
-func (t *sensorApi) hasNoPreviousData(name string) error {
+func (t *testContext) hasNoPreviousData(name string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -35,7 +41,7 @@ func (t *sensorApi) hasNoPreviousData(name string) error {
 				Value: name,
 			},
 		},
-		TableName: aws.String(t.tableName),
+		TableName: aws.String(envTableName),
 	})
 
 	if err != nil {
@@ -45,41 +51,39 @@ func (t *sensorApi) hasNoPreviousData(name string) error {
 	return nil
 }
 
-func (t *sensorApi) sensorSendsMeasurement(kind string, measurement int) error {
+func (t *testContext) sensorSendsMeasurement(kind string, measurement int) error {
 	return godog.ErrPending
 }
 
-func (t *sensorApi) requestLatestMeasurement(sensor string, kind string) error {
-	return godog.ErrPending
-}
-
-func (t *sensorApi) measurementShouldBe(value int) error {
-	return godog.ErrPending
-}
-
-func InitializeScenario(sc *godog.ScenarioContext) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	var api *sensorApi
-	tableName := os.Getenv("TEST_DYNAMODB_TABLE")
-
-	if tableName == "" {
-		panic(fmt.Errorf("missing TEST_DYNAMODB_TABLE"))
-	}
-
-	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion("ap-northeast-1"))
+func (t *testContext) requestLatestMeasurement(sensor string, kind string) error {
+	url := fmt.Sprintf("%s/sensor/%s/%s", envBaseURL, sensor, kind)
+	res, err := http.Get(url)
 
 	if err != nil {
-		panic(fmt.Errorf("config.LoadDefaultConfig: %w", err))
+		return fmt.Errorf("http.Get: %w", err)
 	}
 
-	db := dynamodb.NewFromConfig(cfg)
+	t.lastResponse = res
 
-	api = newSensorApi(db, tableName)
+	return nil
+}
 
-	sc.Step(`^the sensor named "([a-zA-Z0-9-]+)" has no previous data$`, api.hasNoPreviousData)
-	sc.Step(`^the sensor sends a (temperature) measurement of (\d+)$`, api.sensorSendsMeasurement)
-	sc.Step(`^I request the latest (temperature) measurement for "([a-zA-Z0-9-]+)"$`, api.requestLatestMeasurement)
-	sc.Step(`^the measurement should equal (\d+)$`, api.measurementShouldBe)
+func (t *testContext) measurementShouldBe(value int) error {
+	if t.lastResponse == nil {
+		return fmt.Errorf("no response tracked, probably test failure")
+	}
+
+	return godog.ErrPending
+}
+
+func (t *testContext) measurementShouldNotBeFound() error {
+	if t.lastResponse == nil {
+		return fmt.Errorf("no response tracked, probably test failure")
+	}
+
+	if t.lastResponse.StatusCode != http.StatusNotFound {
+		return fmt.Errorf("expected status code %d but got %d", http.StatusNotFound, t.lastResponse.StatusCode)
+	}
+
+	return nil
 }
