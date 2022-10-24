@@ -24,6 +24,12 @@ variable "environment_vars" {
   default     = {}
 }
 
+variable "policies" {
+  description = "Additional policies to attach"
+  type        = set(string)
+  default     = []
+}
+
 locals {
   prefix = "${var.prefix}-${var.name}"
 }
