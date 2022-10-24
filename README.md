@@ -10,12 +10,11 @@ to the local path for easier use.
 ## Goals
 
 This is intended as a sandbox/reference for building a site using AWS Lambdas,
-API Gateway, and being able to test everything locally with localstack,
-including the Terraform deployment.
+API Gateway, and being able to test everything using Gherkin. This is not
+intended to be a complicated project and this infrastructure is absolutely
+overkill for what this is trying to do. The point is to play around!
 
-There should be no global dependencies except Make and Python 3+, which are
-generally pre-installed on any machine this should be running on. Docker is
-required for local testing with [Localstack](https://github.com/localstack/localstack).
+There should be no global dependencies except Make and Go 1.18+.
 
 ## Design
 
