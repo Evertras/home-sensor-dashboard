@@ -110,7 +110,7 @@ dist
 /bin
 
 # Local env files
-.envrc
+.envrc*
 
 # Local python environment
 .venv

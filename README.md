@@ -17,29 +17,6 @@ There should be no global dependencies except Make and Python 3+, which are
 generally pre-installed on any machine this should be running on. Docker is
 required for local testing with [Localstack](https://github.com/localstack/localstack).
 
-## Deploying locally
-
-The rest of my infrastructure uses Terraform, so SAM is skipped in favor of
-doing some manual bits in Terraform.
-
-[Localstack](https://github.com/localstack/localstack) is used for local
-testing. [Terraform can be run against
-Localstack](https://docs.localstack.cloud/integrations/terraform/), and this is
-baked into the [Makefile](./Makefile) by running `make local-tf-apply`.
-
-The `awslocal` utility is also installed via Makefile.
-
-Check [.envrc.example](./.envrc.example) to see how to configure all this for
-easier use. Some quick reference examples are given below.
-
-```bash
-# Check DynamoDB tables
-awslocal dynamodb list-tables
-
-# Invoke a lambda (replace 'idk')
-awslocal lambda invoke --function-name=evertras-home-dashboard-idk response.json
-```
-
 ## Design
 
 The initial design is very simple. Data is stored in a DynamoDB table to keep
@@ -67,6 +44,46 @@ The schema uses the following format for latest measurements:
 | MeasurementValue | N    | The actual value of the measurement that was taken.                                                                                                                        |
 | Location         | S    | The physical location of the sensor.                                                                                                                                       |
 | Timestamp        | S    | The timestamp that this measurement was taken.                                                                                                                             |
+
+## Terraform workspaces
+
+There are two environments: `dev` and `prod`. `dev` is used purely for testing
+purposes. `prod` is what our actual site will use.
+
+Managing these separate environments is accomplished with [Terraform
+Workspaces](https://developer.hashicorp.com/terraform/language/state/workspaces).
+In a real production environment this should be handled a little more cleanly to
+better separate AWS credentials, etc., but for this simple setup it's fine.
+
+The `prod` environment is the default workspace. `dev` is the `dev` workspace.
+
+## Deploying locally (Deprecated)
+
+**NOTE:** Unfortunately, Localstack restricts API Gateway v2 to pro customers
+only. Since this is expensive for a toy project, we will instead create a
+simple and nearly free dev environment in AWS directly. Some code for
+Localstack remains for reference but this should be cleaned up later.
+
+The rest of my infrastructure uses Terraform, so SAM is skipped in favor of
+doing some manual bits in Terraform.
+
+[Localstack](https://github.com/localstack/localstack) is used for local
+testing. [Terraform can be run against
+Localstack](https://docs.localstack.cloud/integrations/terraform/), and this is
+baked into the [Makefile](./Makefile) by running `make local-tf-apply`.
+
+The `awslocal` utility is also installed via Makefile.
+
+Check [.envrc.example](./.envrc.example) to see how to configure all this for
+easier use. Some quick reference examples are given below.
+
+```bash
+# Check DynamoDB tables
+awslocal dynamodb list-tables
+
+# Invoke a lambda (replace 'idk')
+awslocal lambda invoke --function-name=evertras-home-dashboard-idk response.json
+```
 
 ## References
 

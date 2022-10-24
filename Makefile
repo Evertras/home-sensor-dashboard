@@ -14,6 +14,8 @@ lint: node_modules bin/terraform
 
 .PHONY: lint-fix
 lint-fix: node_modules bin/terraform
+	@echo "===> Fixing Go..."
+	cd tests && go fmt ./...
 	@echo "===> Fixing Terraform..."
 	./bin/terraform fmt -recursive ./terraform
 	@echo "===> Fixing other files..."

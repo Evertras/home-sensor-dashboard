@@ -13,6 +13,11 @@ variable "api_gateway_execution_arn" {
   type        = string
 }
 
+variable "prefix" {
+  description = "The prefix to use for naming"
+  type        = string
+}
+
 locals {
-  prefix = "evertras-home-dashboard-${var.name}"
+  prefix = "${var.prefix}-${var.name}"
 }

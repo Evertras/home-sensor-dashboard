@@ -1,3 +1,3 @@
 locals {
-  prefix = "evertras-home-dashboard"
+  prefix = terraform.workspace == "default" ? "evertras-home-dashboard" : "evertras-home-dashboard-${terraform.workspace}"
 }
