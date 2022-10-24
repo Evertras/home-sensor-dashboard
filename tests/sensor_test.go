@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"net/http"
@@ -32,16 +33,32 @@ func (t *testContext) hasNoPreviousData(name string) error {
 	return nil
 }
 
-func (t *testContext) sensorSendsMeasurement(kind string, measurement int) error {
-	return godog.ErrPending
+func (t *testContext) sensorSendsMeasurement(sensor, kind string, measurement int) error {
+	url := fmt.Sprintf("%s/sensor/%s/%s", envBaseURL, sensor, kind)
+
+	body := bytes.NewBufferString(fmt.Sprintf("%d", measurement))
+
+	res, err := t.httpClient.Post(url, "text/plain", body)
+
+	if err != nil {
+		return fmt.Errorf("t.httpClient.Post: %w", err)
+	}
+
+	if res.StatusCode/100 != 2 {
+		return fmt.Errorf("expected status code 2xx, got %d", res.StatusCode)
+	}
+
+	t.lastResponse = res
+
+	return nil
 }
 
 func (t *testContext) requestLatestMeasurement(sensor string, kind string) error {
 	url := fmt.Sprintf("%s/sensor/%s/%s", envBaseURL, sensor, kind)
-	res, err := http.Get(url)
+	res, err := t.httpClient.Get(url)
 
 	if err != nil {
-		return fmt.Errorf("http.Get: %w", err)
+		return fmt.Errorf("t.httpClient.Get: %w", err)
 	}
 
 	t.lastResponse = res

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -29,16 +30,20 @@ func init() {
 	envBaseURL = mustEnv("TEST_BASE_URL")
 }
 
-
 type testContext struct {
 	db *dynamodb.Client
 
+	httpClient   *http.Client
 	lastResponse *http.Response
 }
 
 func newTestContext(db *dynamodb.Client) *testContext {
 	return &testContext{
-		db:           db,
+		db: db,
+		httpClient: &http.Client{
+			Timeout: time.Second * 5,
+		},
+
 		lastResponse: nil,
 	}
 }
@@ -76,7 +81,7 @@ func InitializeScenario(sc *godog.ScenarioContext) {
 	t = newTestContext(db)
 
 	sc.Step(`^the sensor named "([a-zA-Z0-9-]+)" has no previous data$`, t.hasNoPreviousData)
-	sc.Step(`^the sensor sends a (temperature) measurement of (\d+)$`, t.sensorSendsMeasurement)
+	sc.Step(`^the sensor named "([a-zA-Z0-9-]+)" sends a (temperature) measurement of (\d+)$`, t.sensorSendsMeasurement)
 	sc.Step(`^I request the latest (temperature) measurement for "([a-zA-Z0-9-]+)"$`, t.requestLatestMeasurement)
 	sc.Step(`^the measurement should equal (\d+)$`, t.measurementShouldBe)
 	sc.Step(`^the measurement should not be found$`, t.measurementShouldNotBeFound)

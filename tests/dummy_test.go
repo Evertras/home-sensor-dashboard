@@ -8,7 +8,7 @@ import (
 func (t *testContext) iCallTheDummyEndpoint() error {
 	url := fmt.Sprintf("%s/dummy", envBaseURL)
 
-	res, err := http.Get(url)
+	res, err := t.httpClient.Get(url)
 
 	if err != nil {
 		return fmt.Errorf("failed to GET: %w", err)

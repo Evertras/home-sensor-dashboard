@@ -10,6 +10,6 @@ Feature: sensor data
 
   Scenario: the first sensor update is sent
     Given the sensor named "test-first" has no previous data
-    When the sensor sends a temperature measurement of 28
+    When the sensor named "test-first" sends a temperature measurement of 28
     And I request the latest temperature measurement for "test-first"
     Then the measurement should equal 28
