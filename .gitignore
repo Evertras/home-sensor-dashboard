@@ -111,6 +111,7 @@ dist
 
 # Local env files
 .envrc*
+.credentials*
 
 # Local python environment
 .venv

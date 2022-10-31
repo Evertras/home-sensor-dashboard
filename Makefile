@@ -21,6 +21,10 @@ lint-fix: node_modules bin/terraform
 	@echo "===> Fixing other files..."
 	npx prettier --write .
 
+.PHONY: test-dev
+test-dev: bin/godog
+	cd tests && source .credentials-dev && ../bin/godog run .
+
 .PHONY: clean
 clean:
 	rm -rf .venv
@@ -63,6 +67,10 @@ bin/terraform:
 	curl -Lo bin/terraform.zip https://releases.hashicorp.com/terraform/1.3.2/terraform_1.3.2_$(OS_URL)_amd64.zip
 	cd bin && unzip terraform.zip
 	rm bin/terraform.zip
+
+bin/godog:
+	mkdir -p bin
+	curl -L https://github.com/cucumber/godog/releases/download/v0.12.5/godog-v0.12.5-$(OS_URL)-amd64.tar.gz | tar -xz -C bin --strip-components=1 godog-v0.12.5-$(OS_URL)-amd64/godog
 
 node_modules: package-lock.json
 	npm install
