@@ -1,20 +1,24 @@
 module "lambda_dummy" {
   source = "./modules/lambda"
 
-  name   = "dummy"
-  code   = file("${path.module}/../lambdas/dummy.js")
-  prefix = local.prefix
+  name       = "dummy"
+  code       = file("${path.module}/../lambdas/dummy.js")
+  prefix     = local.prefix
+  http_route = "GET /dummy"
 
+  api_gateway_id            = aws_apigatewayv2_api.api.id
   api_gateway_execution_arn = aws_apigatewayv2_api.api.execution_arn
 }
 
 module "lambda_send_data" {
   source = "./modules/lambda"
 
-  name   = "send-data"
-  code   = file("${path.module}/../lambdas/send_data.js")
-  prefix = local.prefix
+  name       = "send-data"
+  code       = file("${path.module}/../lambdas/send_data.js")
+  prefix     = local.prefix
+  http_route = "PUT /sensor/{sensorID}/{measurementKind}"
 
+  api_gateway_id            = aws_apigatewayv2_api.api.id
   api_gateway_execution_arn = aws_apigatewayv2_api.api.execution_arn
 
   environment_vars = {
@@ -53,10 +57,12 @@ resource "aws_iam_role_policy_attachment" "lambda_send_data_dynamodb_attach" {
 module "lambda_get_measurement" {
   source = "./modules/lambda"
 
-  name   = "get-measurement"
-  code   = file("${path.module}/../lambdas/get_measurement.js")
-  prefix = local.prefix
+  name       = "get-measurement"
+  code       = file("${path.module}/../lambdas/get_measurement.js")
+  prefix     = local.prefix
+  http_route = "GET /sensor/{sensorID}/{measurementKind}"
 
+  api_gateway_id            = aws_apigatewayv2_api.api.id
   api_gateway_execution_arn = aws_apigatewayv2_api.api.execution_arn
 
   environment_vars = {

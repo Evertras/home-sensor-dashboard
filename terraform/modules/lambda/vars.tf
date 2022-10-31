@@ -13,6 +13,17 @@ variable "api_gateway_execution_arn" {
   type        = string
 }
 
+variable "api_gateway_id" {
+  description = "The ID for the API gateway that should call this lambda"
+  type        = string
+}
+
+variable "http_route" {
+  description = "The full HTTP route including initial method.  Optional."
+  default     = ""
+  type        = string
+}
+
 variable "prefix" {
   description = "The prefix to use for naming"
   type        = string
