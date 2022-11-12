@@ -13,7 +13,7 @@ module.exports.handler = async (e) => {
     console.log("Bad measurement kind:", measurementKind);
     return {
       statusCode: 400,
-      body: "Unknown mesaurement kind",
+      body: "Unknown measurement kind",
     };
   }
 
