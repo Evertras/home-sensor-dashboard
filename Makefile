@@ -7,6 +7,8 @@ default: \
 
 .PHONY: lint
 lint: node_modules bin/terraform
+	@echo "===> Checking Go..."
+	cd tests && test -z $$(gofmt -l .) || (gofmt -l . && exit 1)
 	@echo "===> Checking Terraform..."
 	./bin/terraform fmt -check -recursive ./terraform
 	@echo "===> Checking other files..."
