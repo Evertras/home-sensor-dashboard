@@ -33,6 +33,18 @@ clean:
 	rm -rf bin
 	rm -rf terraform/modules/lambda/.archives
 
+.PHONY: localstack-up
+localstack-up: .venv/bin/localstack
+	@.venv/bin/localstack start -d
+
+.PHONY: localstack-status
+localstack-status: .venv/bin/localstack
+	@.venv/bin/localstack status
+
+.PHONY: localstack-down
+localstack-down: .venv/bin/localstack
+	@.venv/bin/localstack stop
+
 .PHONY: local-tf-apply
 local-tf-apply: .venv bin/terraform
 	cd terraform && ../.venv/bin/tflocal apply -auto-approve
@@ -47,6 +59,9 @@ local-tf-destroy: .venv bin/terraform
 	@rm -rf .venv
 	python3 -m venv .venv
 	.venv/bin/pip3 install -r requirements.txt
+
+.venv/bin/localstack: .venv
+	./.venv/bin/python3 -m pip install localstack
 
 # For now we only support Linux 64 bit and MacOS for simplicity
 ifeq ($(shell uname), Darwin)
