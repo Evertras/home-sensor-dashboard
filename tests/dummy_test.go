@@ -1,17 +1,24 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"time"
 )
 
-func (t *testContext) iCallTheDummyEndpoint() error {
-	url := fmt.Sprintf("%s/dummy", envBaseURL)
+type dummyCaller interface {
+	CallDummy(ctx context.Context) (*http.Response, error)
+}
 
-	res, err := t.httpClient.Get(url)
+func (t *testContext) iCallTheDummyEndpoint() error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	res, err := t.provider.CallDummy(ctx)
 
 	if err != nil {
-		return fmt.Errorf("failed to GET: %w", err)
+		return fmt.Errorf("t.provider.CallDummy: %w", err)
 	}
 
 	if res.StatusCode != http.StatusOK {

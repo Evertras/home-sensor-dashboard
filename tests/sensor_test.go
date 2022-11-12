@@ -1,96 +1,75 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"time"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
+
+type sensorRepository interface {
+	ClearSensor(ctx context.Context, sensorName string) error
+	SendMeasurement(ctx context.Context, sensorName, kind string, measurement int) (*http.Response, error)
+	RequestLatestMeasurement(ctx context.Context, sensorName, kind string) (*http.Response, error)
+}
 
 func (t *testContext) hasNoPreviousData() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
-	_, err := t.db.DeleteItem(ctx, &dynamodb.DeleteItemInput{
-		Key: map[string]types.AttributeValue{
-			"SensorID": &types.AttributeValueMemberS{
-				Value: t.sensorName,
-			},
-		},
-		TableName: aws.String(envTableName),
-	})
+	err := t.provider.ClearSensor(ctx, t.sensorName)
 
 	if err != nil {
-		return fmt.Errorf("t.db.DeleteItem: %w", err)
+		return fmt.Errorf("t.provider.ClearSensor: %w", err)
 	}
 
 	return nil
 }
 
-func (t *testContext) sendMeasurementInner(kind string, measurement int) (*http.Response, error) {
-	url := fmt.Sprintf("%s/sensor/%s/%s", envBaseURL, t.sensorName, kind)
-
-	body := bytes.NewBufferString(fmt.Sprintf(`{"value": %d}`, measurement))
-
-	req, err := http.NewRequest("PUT", url, body)
-
-	req.Header.Add("content-type", "application/json")
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
-
-	res, err := t.httpClient.Do(req)
-
-	if err != nil {
-		return nil, fmt.Errorf("t.httpClient.Post: %w", err)
-	}
-
-	t.lastResponse = res
-
-	return res, nil
-}
-
 func (t *testContext) sensorSendsBadMeasurement(kind string, measurement int) error {
-	_, err := t.sendMeasurementInner(kind, measurement)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	var err error
+	t.lastResponse, err = t.provider.SendMeasurement(ctx, t.sensorName, kind, measurement)
 
 	if err != nil {
-		return fmt.Errorf("t.sendMeasurementInner: %w", err)
+		return fmt.Errorf("t.provider.SendMeasurement: %w", err)
 	}
 
 	return nil
 }
 
 func (t *testContext) sensorSendsMeasurement(kind string, measurement int) error {
-	res, err := t.sendMeasurementInner(kind, measurement)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	var err error
+	t.lastResponse, err = t.provider.SendMeasurement(ctx, t.sensorName, kind, measurement)
 
 	if err != nil {
-		return fmt.Errorf("t.sendMeasurementInner: %w", err)
+		return fmt.Errorf("t.provider.SendMeasurement: %w", err)
 	}
 
-	if res.StatusCode/100 != 2 {
-		return fmt.Errorf("expected status code 2xx, got %d", res.StatusCode)
+	if t.lastResponse.StatusCode/100 != 2 {
+		return fmt.Errorf("expected status code 2xx, got %d", t.lastResponse.StatusCode)
 	}
 
 	return nil
 }
 
 func (t *testContext) requestLatestMeasurement(kind, sensor string) error {
-	url := fmt.Sprintf("%s/sensor/%s/%s", envBaseURL, sensor, kind)
-	res, err := t.httpClient.Get(url)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	var err error
+	t.lastResponse, err = t.provider.RequestLatestMeasurement(ctx, sensor, kind)
 
 	if err != nil {
-		return fmt.Errorf("t.httpClient.Get: %w", err)
+		return fmt.Errorf("t.provider.RequestLatestMeasurement: %w", err)
 	}
-
-	t.lastResponse = res
 
 	return nil
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"godogs/providers/remote"
 	"net/http"
 	"os"
 	"time"
@@ -30,19 +31,30 @@ func init() {
 	envBaseURL = mustEnv("TEST_BASE_URL")
 }
 
+type provider interface {
+	sensorRepository
+	dummyCaller
+}
+
 type testContext struct {
 	sensorName string
 
 	db *dynamodb.Client
+
+	provider provider
 
 	httpClient   *http.Client
 	lastResponse *http.Response
 }
 
 func newTestContext(db *dynamodb.Client) *testContext {
+	// TODO: local env
+	provider := remote.New(envBaseURL, envTableName)
+
 	return &testContext{
 		sensorName: "test-some-sensor",
 		db:         db,
+		provider:   provider,
 		httpClient: &http.Client{
 			Timeout: time.Second * 5,
 		},
