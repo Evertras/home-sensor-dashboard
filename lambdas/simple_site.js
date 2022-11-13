@@ -10,7 +10,7 @@ module.exports.handler = async () => {
     .promise();
 
   // Just let errors happen if they happen...
-  const allMeasurements = data.value.Items;
+  const allMeasurements = data.Items;
 
   return {
     statusCode: 200,
