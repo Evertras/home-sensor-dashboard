@@ -21,3 +21,10 @@ Feature: sensor data
     When the sensor sends a TemperatureC measurement of 28
     And I request the latest TemperatureC measurement for "test-first"
     Then the measurement should equal 28
+
+  Scenario: multiple measurement kinds are sent
+    Given there are sensors that sent measurements:
+      | name | TemperatureC | Humidity100 |
+      | test-multi | 21 | 54 |
+    When I request the latest TemperatureC measurement for "test-multi"
+    Then the measurement should equal 21

@@ -102,6 +102,7 @@ func InitializeScenario(sc *godog.ScenarioContext) {
 	t = newTestContext(db)
 
 	sc.Step(`^a sensor named "([a-zA-Z0-9-]+)"$`, t.aSensorNamed)
+	sc.Step(`^there are sensors that sent measurements:$`, t.thereAreSensorsThatSentMeasurements)
 	sc.Step(`^the sensor has no previous data$`, t.hasNoPreviousData)
 	sc.Step(`^the sensor sends a (\w+) measurement of (\d+)$`, t.sensorSendsMeasurement)
 	sc.Step(`^the sensor sends a bad (\w+) measurement of (\d+)$`, t.sensorSendsBadMeasurement)

@@ -21,6 +21,7 @@ module.exports.handler = async (e) => {
       TableName: process.env.SENSOR_TABLE_NAME,
       Key: {
         SensorID: sensorID,
+        MeasurementType: measurementKind,
       },
     })
     .promise();

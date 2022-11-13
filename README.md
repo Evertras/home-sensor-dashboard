@@ -44,6 +44,8 @@ The schema uses the following format for latest measurements:
 | Location         | S    | The physical location of the sensor.                                                                                                                                                                                                                      |
 | Timestamp        | S    | The timestamp that this measurement was taken.                                                                                                                                                                                                            |
 
+The primary key is a combination of `SensorID` and `MeasurementKind`.
+
 ## Terraform workspaces
 
 There are two environments: `dev` and `prod`. `dev` is used purely for testing

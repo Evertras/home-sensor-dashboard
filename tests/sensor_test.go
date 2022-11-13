@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
+
+	"github.com/cucumber/godog"
 )
 
 type sensorRepository interface {
@@ -23,6 +26,45 @@ func (t *testContext) hasNoPreviousData() error {
 
 	if err != nil {
 		return fmt.Errorf("t.provider.ClearSensor: %w", err)
+	}
+
+	return nil
+}
+
+func (t *testContext) thereAreSensorsThatSentMeasurements(sensors *godog.Table) error {
+	columnNames := make([]string, 0)
+
+	header := sensors.Rows[0]
+
+	for _, cell := range header.Cells {
+		columnNames = append(columnNames, cell.Value)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	for _, row := range sensors.Rows[1:] {
+		sensorName := row.Cells[0].Value
+
+		for iCol, cell := range row.Cells[1:] {
+			measurementKind := columnNames[iCol+1]
+
+			measurementValue, err := strconv.Atoi(cell.Value)
+
+			if err != nil {
+				return fmt.Errorf("failed to convert %q to integer: %w", cell.Value, err)
+			}
+
+			res, err := t.provider.SendMeasurement(ctx, sensorName, measurementKind, measurementValue)
+
+			if err != nil {
+				return fmt.Errorf("failed to sned initial sensor data for sensor %q and measurement %q of value %d: %w", sensorName, measurementKind, measurementValue, err)
+			}
+
+			if res.StatusCode/100 != 2 {
+				return fmt.Errorf("unexpected non-200 HTTP response code: %d", res.StatusCode)
+			}
+		}
 	}
 
 	return nil

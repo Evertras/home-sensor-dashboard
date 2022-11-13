@@ -5,24 +5,16 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
 func (p *Provider) ClearSensor(ctx context.Context, sensorName string) error {
-	_, err := p.db.DeleteItem(ctx, &dynamodb.DeleteItemInput{
-		Key: map[string]types.AttributeValue{
-			"SensorID": &types.AttributeValueMemberS{
-				Value: sensorName,
-			},
-		},
-		TableName: aws.String(p.tableName),
-	})
+	measurementsToClear := []string{"temperaturec", "humidity100"}
 
-	if err != nil {
-		return fmt.Errorf("dev p.db.DeleteItem: %w", err)
+	for _, measurementType := range measurementsToClear {
+		err := p.deleteSensorData(ctx, sensorName, measurementType)
+		if err != nil {
+			return fmt.Errorf("dev p.db.DeleteItem for sensor %q and measurement %q: %w", sensorName, measurementType, err)
+		}
 	}
 
 	return nil
