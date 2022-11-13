@@ -19,7 +19,7 @@ module "lambda_get_measurement" {
 
 resource "aws_iam_policy" "lambda_get_measurement_dynamodb" {
   name        = "${local.prefix}-lambda-get-measurement-db-access"
-  description = "Allows DynamoDB write access for writing measurements"
+  description = "Allows DynamoDB read access for reading measurements"
 
   policy = jsonencode({
     Version = "2012-10-17"
