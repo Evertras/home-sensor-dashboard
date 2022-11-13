@@ -4,6 +4,18 @@ output "api_gateway_prod_url" {
   value = aws_apigatewayv2_stage.prod.invoke_url
 }
 
+output "api_gateway_id" {
+  description = "The ID of the API gateway in use for linking elsewhere"
+
+  value = aws_apigatewayv2_api.api.id
+}
+
+output "api_gateway_stage" {
+  description = "The stage name for the API gateway for linking elsewhere"
+
+  value = aws_apigatewayv2_stage.prod.name
+}
+
 output "lambda_dummy_function_name" {
   value = module.lambda_dummy.function_name
 }
