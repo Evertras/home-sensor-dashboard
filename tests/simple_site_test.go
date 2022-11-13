@@ -29,7 +29,7 @@ func (t *testContext) iRequestTheSimpleSite() error {
 	return nil
 }
 
-func (t *testContext) thePageShouldContainATableWithRows(data *godog.Table) error {
+func (t *testContext) thePageShouldContainData(data *godog.Table) error {
 	// TODO: should just store body on read, but for now...
 	raw, err := io.ReadAll(t.lastResponse.Body)
 

@@ -10,7 +10,7 @@ Feature: simple site
       | test-2 | 25 | 80 |
     When I request the simple site
     Then the status code should be 200
-    # TODO: this is incredibly fragile, but just to start...
-    And the page should contain a table with rows:
+    # TODO: this is fragile/bad, but just to start...
+    And the page should contain data:
       | test-1 | 22 | 38 |
       | test-2 | 25 | 80 |

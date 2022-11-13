@@ -113,5 +113,5 @@ func InitializeScenario(sc *godog.ScenarioContext) {
 	sc.Step(`^I call the dummy endpoint$`, t.iCallTheDummyEndpoint)
 	sc.Step(`^the status code should be (\d+)$`, t.theStatusCodeShouldBe)
 	sc.Step(`^I request the simple site$`, t.iRequestTheSimpleSite)
-	sc.Step(`^the page should contain a table with rows:$`, t.thePageShouldContainATableWithRows)
+	sc.Step(`^the page should contain data:$`, t.thePageShouldContainData)
 }
