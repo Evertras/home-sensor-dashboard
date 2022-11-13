@@ -34,6 +34,7 @@ func init() {
 type provider interface {
 	sensorRepository
 	dummyCaller
+	simpleSiteGetter
 }
 
 type testContext struct {
@@ -111,4 +112,5 @@ func InitializeScenario(sc *godog.ScenarioContext) {
 	sc.Step(`^the measurement should not be found$`, t.measurementShouldNotBeFound)
 	sc.Step(`^I call the dummy endpoint$`, t.iCallTheDummyEndpoint)
 	sc.Step(`^the status code should be (\d+)$`, t.theStatusCodeShouldBe)
+	sc.Step(`^I request the simple site$`, t.iRequestTheSimpleSite)
 }

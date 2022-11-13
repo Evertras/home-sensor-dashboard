@@ -8,3 +8,5 @@ Feature: simple site
       | name   | TemperatureC | Humidity100 |
       | test-1 | 22 | 38 |
       | test-2 | 25 | 80 |
+    When I request the simple site
+    Then the status code should be 200
