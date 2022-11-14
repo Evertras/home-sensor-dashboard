@@ -47,6 +47,9 @@ module.exports.handler = async () => {
 
   const page = `
 <html>
+  <head>
+    <title>Home Sensor Data</title>
+  </head>
   <body>
     ${table}
   </body>
